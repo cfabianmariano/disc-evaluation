@@ -189,14 +189,20 @@ export default function App() {
   const handleRespuestas = async (respuestas) => {
     setPaso('cargando')
     try {
-      const res  = await fetch('/api/submit', {
+      await fetch(import.meta.env.VITE_APPSCRIPT_URL, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ nombre: persona.nombre, email: persona.email, puestoAplicado: persona.puesto, respuestas })
+        mode: 'no-cors',
+        body: JSON.stringify({
+          nombre: persona.nombre,
+          email: persona.email,
+          puestoAplicado: persona.puesto,
+          respuestas
+        })
       })
-      const data = await res.json()
-      setPaso(data.exito ? 'gracias' : 'error')
-    } catch { setPaso('error') }
+      setPaso('gracias')
+    } catch {
+      setPaso('error')
+    }
   }
 
   return (
