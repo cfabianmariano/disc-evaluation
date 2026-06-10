@@ -5,14 +5,12 @@ export default async function handler(req, res) {
   if (!scriptUrl) return res.status(500).json({ exito: false, mensaje: 'APPSCRIPT_URL no configurada.' })
 
   try {
-    const body = typeof req.body === 'string' ? JSON.parse(req.body) : req.body
+    let body = req.body
+    if (typeof body === 'string') body = JSON.parse(body)
 
     const response = await fetch(scriptUrl, {
       method: 'POST',
-      headers: {
-        'Content-Type': 'application/json',
-        'Accept': 'application/json'
-      },
+      headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify(body),
       redirect: 'follow'
     })
@@ -24,11 +22,10 @@ export default async function handler(req, res) {
       return res.status(200).json(data)
     } catch {
       if (response.ok) return res.status(200).json({ exito: true })
-      return res.status(500).json({ exito: false, mensaje: 'Respuesta inválida del servidor.' })
+      return res.status(200).json({ exito: false, mensaje: text.substring(0, 200) })
     }
 
   } catch (err) {
-    console.error('Error al llamar AppScript:', err.message)
-    return res.status(500).json({ exito: false, mensaje: err.message })
+    return res.status(200).json({ exito: false, mensaje: err.message })
   }
 }
